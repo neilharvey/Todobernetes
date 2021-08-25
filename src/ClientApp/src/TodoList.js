@@ -15,15 +15,39 @@ class TodoList extends React.Component {
         this.handleItemDelete = this.handleItemDelete.bind(this);
     }
 
+    componentDidMount() {
+        fetch("api/todo")
+            .then(res => res.json())
+            .then(
+                items => {
+                    this.setState({
+                        items: items
+                    });
+                }
+            )
+    }
+
     handleFormSubmit(value) {
 
-        let items = this.state.items.slice();
-        let id = Math.max(items.map(x => x.id).push(0));
-        items.push({ id: 1 + id, name: value});
+        let data = { name: value };
 
-        this.setState({
-            items: items
-        });
+        fetch("api/todo", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data)
+        })
+            .then(res => res.json())
+            .then(item => {
+
+                let items = this.state.items.slice();
+                items.push(item);
+                this.setState({
+                    items: items
+                });
+
+            })
     }
 
     handleItemChange(id, completed) {
@@ -36,6 +60,13 @@ class TodoList extends React.Component {
             items: items
         });
 
+        fetch(`api/todo/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(item)
+        });
     }
 
     handleItemDelete(id) {
@@ -46,6 +77,9 @@ class TodoList extends React.Component {
             items: items
         });
 
+        fetch(`api/todo/${id}`, {
+            method: 'DELETE'
+        });
     }
 
     render() {
