@@ -1,4 +1,4 @@
-﻿namespace Todobernetes.Controllers
+﻿namespace Todobernetes.Api
 {
     public class TodoItem
     {

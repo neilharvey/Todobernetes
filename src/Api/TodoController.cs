@@ -1,27 +1,32 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
-namespace Todobernetes.Controllers
+namespace Todobernetes.Api
 {
     [ApiController]
     [Route("api/[controller]")]
     public class TodoController : ControllerBase
     {
-        // hack - temporary
-        private static int _nextId = 1;
-        private static readonly List<TodoItem> _items = new();
+        private readonly TodoContext _context;
+
+        public TodoController(TodoContext context)
+        {
+            _context = context;
+        }
 
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok(_items);
+            var items = _context.TodoItems.ToList();
+
+            return Ok(items);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            var item = _items.FirstOrDefault(x => x.Id == id);
+            var item = await _context.TodoItems.FindAsync(id);
 
             if (item == null)
             {
@@ -34,18 +39,18 @@ namespace Todobernetes.Controllers
         }
 
         [HttpPost]
-        public IActionResult Post(TodoItem item)
+        public async Task<IActionResult> Post(TodoItem item)
         {
-            item.Id = _nextId;
-            _nextId++;
-            _items.Add(item);
+            _context.TodoItems.Add(item);
+            await _context.SaveChangesAsync();
+
             return CreatedAtAction(nameof(Get), new { id = item.Id }, item);
         }
 
         [HttpPut("{id}")]
-        public IActionResult Put(int id, TodoItem update)
+        public async Task<IActionResult> Put(int id, TodoItem update)
         {
-            var item = _items.FirstOrDefault(x => x.Id == id);
+            var item = await _context.TodoItems.FindAsync(id);
 
             if (item == null)
             {
@@ -54,18 +59,20 @@ namespace Todobernetes.Controllers
             else
             {
                 item.Completed = update.Completed;
+                await _context.SaveChangesAsync();
                 return Ok(item);
             }
         } 
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var item = _items.FirstOrDefault(x => x.Id == id);
+            var item = await _context.TodoItems.FindAsync(id);
 
             if (item != null)
             {
-                _items.Remove(item);
+                _context.TodoItems.Remove(item);
+                await _context.SaveChangesAsync();
             }
 
             return Ok();
