@@ -54,3 +54,4 @@ Obj/
 !*.[Cc]ache/
 
 /node_modules
+.env*

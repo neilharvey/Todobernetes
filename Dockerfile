@@ -15,8 +15,9 @@ RUN apt-get -y install nodejs
 RUN npm install
 
 WORKDIR /src
-COPY ./src /src
+COPY ./src/Todobernetes.csproj /src/Todobernetes.csproj
 RUN dotnet restore "Todobernetes.csproj"
+COPY ./src /src
 RUN dotnet build "Todobernetes.csproj" -c Release -o /app/build
 
 FROM build AS publish
