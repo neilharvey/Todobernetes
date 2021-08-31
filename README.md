@@ -4,4 +4,4 @@ A small Dockerized app for experimenting with kubernetes deployment.
 
 ## Setup
 
-The connection string should be passed as `ASPNET_ConnectionStrings__Default` either via a .env file or the Docker environment flag.
+Run `docker-compose build` to build the containers then `docker compose up` to start the development environment.  The application will be hosted on `http://localhost:5000`.
